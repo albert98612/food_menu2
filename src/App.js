@@ -1,39 +1,40 @@
-import React, { useState } from "react";
-import { X, Trash2, Edit2, Printer } from "lucide-react";
+import React, { useState, useRef } from "react";
+import {Trash2, Edit2, Printer, XCircle } from "lucide-react"; // Import XCircle for the clear button
 
 const MenuMakananDanMinuman = () => {
-  const [menuItems, setMenuItems] = useState([
-    {
-      name: "Nasi Goreng",
-      price: 15000,
-      quantity: 1,
-      description: "Nasi goreng spesial",
-    },
-    {
-      name: "Ayam Kecap",
-      price: 18000,
-      quantity: 1,
-      description: "Ayam kecap manis",
-    },
-  ]);
+  const [menuItems, setMenuItems] = useState([]); // Start with an empty menu
 
   const [newItem, setNewItem] = useState({
     name: "",
-    quantity: 1,
-    price: 0,
+    quantity: "1", // Initialize as a string for text input
+    price: "",
     description: "",
   });
 
   const [editingIndex, setEditingIndex] = useState(null);
 
+  // Create a ref for the price input field
+  const priceInputRef = useRef(null);
+
+  const formatRupiah = (amount) => {
+    const numberString = amount.replace(/[^,\d]/g, ""); // Remove all non-numeric characters
+    const numberValue = parseInt(numberString, 10) || 0; // Convert to integer and handle empty input
+
+    const numberFormatted = numberValue.toLocaleString("id-ID"); // Convert back to formatted string
+    return numberFormatted;
+  };
+
   const addMenuItem = () => {
-    if (newItem.name && newItem.price > 0) {
+    const priceInNumber = parseInt(newItem.price.replace(/\./g, ""), 10);
+    const quantityInNumber = parseInt(newItem.quantity, 10) || 1;
+
+    if (newItem.name && priceInNumber > 0) {
       if (editingIndex !== null) {
         const updatedItems = [...menuItems];
         updatedItems[editingIndex] = {
           ...newItem,
-          price: parseInt(newItem.price, 10),
-          quantity: parseInt(newItem.quantity, 10),
+          price: priceInNumber,
+          quantity: quantityInNumber,
         };
         setMenuItems(updatedItems);
         setEditingIndex(null);
@@ -42,8 +43,8 @@ const MenuMakananDanMinuman = () => {
           ...menuItems,
           {
             ...newItem,
-            price: parseInt(newItem.price, 10),
-            quantity: parseInt(newItem.quantity, 10),
+            price: priceInNumber,
+            quantity: quantityInNumber,
           },
         ]);
       }
@@ -58,21 +59,63 @@ const MenuMakananDanMinuman = () => {
 
   const editMenuItem = (index) => {
     const itemToEdit = menuItems[index];
-    setNewItem({ ...itemToEdit });
+    setNewItem({
+      ...itemToEdit,
+      price: formatRupiah(itemToEdit.price.toString()),
+    });
     setEditingIndex(index);
   };
 
   const resetForm = () => {
-    setNewItem({ name: "", quantity: 1, price: 0, description: "" });
+    setNewItem({ name: "", quantity: "1", price: "", description: "" });
     setEditingIndex(null);
   };
 
   const handleQuantityChange = (e) => {
     const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setNewItem({
+        ...newItem,
+        quantity: value,
+      });
+    }
+  };
+
+  const handlePriceChange = (e) => {
+    const value = e.target.value;
     setNewItem({
       ...newItem,
-      quantity: value === "" ? "" : parseInt(value, 10) || 0,
+      price: formatRupiah(value),
     });
+  };
+
+  const handleQuantityBlur = () => {
+    if (newItem.quantity === "") {
+      setNewItem({
+        ...newItem,
+        quantity: "1",
+      });
+    }
+  };
+
+  const handlePriceBlur = () => {
+    if (newItem.price === "") {
+      setNewItem({
+        ...newItem,
+        price: "0",
+      });
+    }
+  };
+
+  const handleClearPrice = () => {
+    setNewItem({
+      ...newItem,
+      price: "",
+    });
+    // Focus on the price input field
+    if (priceInputRef.current) {
+      priceInputRef.current.focus();
+    }
   };
 
   const handlePrint = () => {
@@ -88,7 +131,6 @@ const MenuMakananDanMinuman = () => {
     <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
       <header className="bg-gray-800 text-white px-4 py-2 flex justify-between items-center">
         <h1 className="text-xl font-bold">Menu Makanan dan Minuman</h1>
-        <X className="cursor-pointer" />
       </header>
 
       <main className="p-4">
@@ -99,18 +141,23 @@ const MenuMakananDanMinuman = () => {
 
         <section id="print-section">
           {menuItems.map((item, index) => (
-            <div key={index} className="bg-gray-100 p-2 rounded mb-1 flex justify-between items-center">
+            <div
+              key={index}
+              className="bg-gray-100 p-2 rounded mb-1 flex justify-between items-center"
+            >
               <div className="text-sm">
                 <p className="font-semibold">{item.name}</p>
-                <p className="text-xs text-gray-600">{item.description}</p>
+                <p className="text-xs text-gray-600 mt-1 print-description">
+                  {item.description}
+                </p>
                 <p className="text-xs text-gray-600 mt-1">
-                  {item.quantity} x Rp {item.price.toLocaleString()}
+                  {item.quantity} x Rp {item.price.toLocaleString('id-ID')}
                 </p>
               </div>
               <div className="flex flex-col items-end">
                 {/* Subtotal is hidden on the web and only shown on print */}
                 <span className="text-xs text-gray-800 print-only print-subtotal hidden">
-                  Rp {(item.quantity * item.price).toLocaleString()}
+                  Rp {(item.quantity * item.price).toLocaleString('id-ID')}
                 </span>
                 <div className="flex space-x-2 icons">
                   <Edit2
@@ -129,7 +176,7 @@ const MenuMakananDanMinuman = () => {
           {/* Total section for print */}
           <div className="flex justify-between items-center mt-4 print-only print-total">
             <p className="font-semibold">Total</p>
-            <p className="font-bold">Rp {total.toLocaleString()}</p>
+            <p className="font-bold">Rp {total.toLocaleString('id-ID')}</p>
           </div>
         </section>
 
@@ -157,26 +204,37 @@ const MenuMakananDanMinuman = () => {
                 Kuantitas
               </label>
               <input
-                type="number"
+                type="text"
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 value={newItem.quantity}
                 onChange={handleQuantityChange}
-                min="1"
+                onBlur={handleQuantityBlur}
+                placeholder="1"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Harga
               </label>
-              <input
-                type="number"
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                placeholder="0"
-                value={newItem.price}
-                onChange={(e) =>
-                  setNewItem({ ...newItem, price: e.target.value })
-                }
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 pr-12"
+                  placeholder="Rp 0"
+                  value={newItem.price}
+                  onChange={handlePriceChange}
+                  onBlur={handlePriceBlur}
+                  ref={priceInputRef} // Set ref to the price input
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 px-3 flex items-center"
+                  onClick={handleClearPrice}
+                  onBlur={handlePriceBlur}
+                >
+                  <XCircle className="text-gray-500" />
+                </button>
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">
@@ -212,7 +270,7 @@ const MenuMakananDanMinuman = () => {
 
         <footer className="mt-6 flex justify-between items-center">
           <p className="text-xl font-bold">
-            Total: Rp {total.toLocaleString()}
+            Total: Rp {total.toLocaleString('id-ID')}
           </p>
           <button
             className="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition duration-300 flex items-center"
@@ -236,44 +294,35 @@ const MenuMakananDanMinuman = () => {
             left: 0;
             top: 0;
             width: 100%;
-            margin: 0;
-            padding: 0;
-          }
-          .icons {
-            display: none;
-          }
-          @page {
-            size: A6;
-            margin: 5mm; /* adjust as needed */
-          }
-          #print-section div {
-            margin-bottom: 4px; /* reduces space between menu items */
-            padding: 2px; /* reduce padding to make it compact */
-          }
-          p {
-            margin: 0;
-            padding: 0;
+            font-size: 18px; /* Increased font size for better readability */
           }
           #print-section .font-semibold {
-            font-size: 20px; /* Larger font for name */
+            font-size: 24px; /* Increased for better readability */
           }
           #print-section .text-xs {
-            font-size: 18px; /* Larger font for description and quantity */
+            font-size: 16px; /* Increased for better readability */
           }
-          .print-total {
-            font-size: 20px;
-            margin-top: 12px;
+          #print-section .print-description {
+            margin-top: 12px; /* Space between name and description */
+          }
+          #print-section .print-total {
+            font-size: 22px; /* Increased for better readability */
+            margin-top: 14px;
             border-top: 1px solid #000;
             padding-top: 10px;
           }
-          .print-total .font-bold {
-            font-size: 24px; /* Larger font for total */
+          #print-section .print-total .font-bold {
+            font-size: 26px; /* Increased for better readability */
           }
-          .print-subtotal {
-            font-size: 18px; /* Subtotal font size */
+          #print-section .print-subtotal {
+            font-size: 20px; /* Increased for better readability */
+            margin-top: 6px; /* Adjusted space for subtotal */
             display: block;
           }
           .daftar-menu-title {
+            display: none;
+          }
+          .icons {
             display: none;
           }
         }

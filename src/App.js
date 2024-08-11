@@ -92,18 +92,26 @@ const MenuMakananDanMinuman = () => {
       </header>
 
       <main className="p-4">
+        {/* Display the title in the web view */}
+        <h2 className="text-lg font-semibold mb-4 daftar-menu-title">
+          Daftar Menu
+        </h2>
+
         <section id="print-section">
-          {/* Remove the header for print */}
           {menuItems.map((item, index) => (
-            <div key={index} className="bg-gray-100 p-2 rounded mb-1">
-              <div className="flex justify-between items-center">
-                <div className="text-sm">
-                  <p className="font-semibold">{item.name}</p>
-                  <p className="text-xs text-gray-600">{item.description}</p>
-                  <p className="text-xs text-gray-600 mt-1">
-                    {item.quantity} x Rp {item.price.toLocaleString()}
-                  </p>
-                </div>
+            <div key={index} className="bg-gray-100 p-2 rounded mb-1 flex justify-between items-center">
+              <div className="text-sm">
+                <p className="font-semibold">{item.name}</p>
+                <p className="text-xs text-gray-600">{item.description}</p>
+                <p className="text-xs text-gray-600 mt-1">
+                  {item.quantity} x Rp {item.price.toLocaleString()}
+                </p>
+              </div>
+              <div className="flex flex-col items-end">
+                {/* Subtotal is hidden on the web and only shown on print */}
+                <span className="text-xs text-gray-800 print-only print-subtotal hidden">
+                  Rp {(item.quantity * item.price).toLocaleString()}
+                </span>
                 <div className="flex space-x-2 icons">
                   <Edit2
                     className="text-blue-500 cursor-pointer"
@@ -117,6 +125,12 @@ const MenuMakananDanMinuman = () => {
               </div>
             </div>
           ))}
+
+          {/* Total section for print */}
+          <div className="flex justify-between items-center mt-4 print-only print-total">
+            <p className="font-semibold">Total</p>
+            <p className="font-bold">Rp {total.toLocaleString()}</p>
+          </div>
         </section>
 
         <section className="mt-6">
@@ -239,6 +253,28 @@ const MenuMakananDanMinuman = () => {
           p {
             margin: 0;
             padding: 0;
+          }
+          #print-section .font-semibold {
+            font-size: 20px; /* Larger font for name */
+          }
+          #print-section .text-xs {
+            font-size: 18px; /* Larger font for description and quantity */
+          }
+          .print-total {
+            font-size: 20px;
+            margin-top: 12px;
+            border-top: 1px solid #000;
+            padding-top: 10px;
+          }
+          .print-total .font-bold {
+            font-size: 24px; /* Larger font for total */
+          }
+          .print-subtotal {
+            font-size: 18px; /* Subtotal font size */
+            display: block;
+          }
+          .daftar-menu-title {
+            display: none;
           }
         }
       `}</style>

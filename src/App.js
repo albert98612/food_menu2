@@ -130,7 +130,7 @@ const MenuMakananDanMinuman = () => {
   return (
     <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
       <header className="bg-gray-800 text-white px-4 py-2 flex justify-between items-center">
-        <h1 className="text-xl font-bold">Menu Makanan dan Minuman</h1>
+        <h1 className="text-xl font-bold">PG Delivery</h1>
       </header>
 
       <main className="p-4">

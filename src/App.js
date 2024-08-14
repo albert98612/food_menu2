@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import {Trash2, Edit2, Printer, XCircle } from "lucide-react"; // Import XCircle for the clear button
+import { Trash2, Edit2, Printer, XCircle } from "lucide-react"; // Import XCircle for the clear button
 
 const MenuMakananDanMinuman = () => {
   const [menuItems, setMenuItems] = useState([]); // Start with an empty menu
@@ -150,14 +150,14 @@ const MenuMakananDanMinuman = () => {
                 <p className="text-xs text-gray-600 mt-1 print-description">
                   {item.description}
                 </p>
-                <p className="text-xs text-gray-600 mt-1">
-                  {item.quantity} x Rp {item.price.toLocaleString('id-ID')}
+                <p className="text-xs text-gray-600 mt-1 print-nominal">
+                  {item.quantity} x Rp {item.price.toLocaleString("id-ID")}
                 </p>
               </div>
               <div className="flex flex-col items-end">
                 {/* Subtotal is hidden on the web and only shown on print */}
                 <span className="text-xs text-gray-800 print-only print-subtotal hidden">
-                  Rp {(item.quantity * item.price).toLocaleString('id-ID')}
+                  Rp {(item.quantity * item.price).toLocaleString("id-ID")}
                 </span>
                 <div className="flex space-x-2 icons">
                   <Edit2
@@ -176,7 +176,7 @@ const MenuMakananDanMinuman = () => {
           {/* Total section for print */}
           <div className="flex justify-between items-center mt-4 print-only print-total">
             <p className="font-semibold">Total</p>
-            <p className="font-bold">Rp {total.toLocaleString('id-ID')}</p>
+            <p className="font-bold">Rp {total.toLocaleString("id-ID")}</p>
           </div>
         </section>
 
@@ -270,7 +270,7 @@ const MenuMakananDanMinuman = () => {
 
         <footer className="mt-6 flex justify-between items-center">
           <p className="text-xl font-bold">
-            Total: Rp {total.toLocaleString('id-ID')}
+            Total: Rp {total.toLocaleString("id-ID")}
           </p>
           <button
             className="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition duration-300 flex items-center"
@@ -304,12 +304,14 @@ const MenuMakananDanMinuman = () => {
           }
           #print-section .print-description {
             margin-top: 12px; /* Space between name and description */
+            font-weight: bold;
+            color: black;
           }
           #print-section .print-total {
             font-size: 22px; /* Increased for better readability */
             margin-top: 14px;
             border-top: 1px solid #000;
-            padding-top: 10px;
+            padding-top: 10px;            
           }
           #print-section .print-total .font-bold {
             font-size: 26px; /* Increased for better readability */
@@ -318,12 +320,18 @@ const MenuMakananDanMinuman = () => {
             font-size: 20px; /* Increased for better readability */
             margin-top: 6px; /* Adjusted space for subtotal */
             display: block;
+            font-weight: bold;
+            color: black;
           }
           .daftar-menu-title {
             display: none;
           }
           .icons {
             display: none;
+          }
+          .print-nominal{            
+            font-weight: bold;
+            color: black;
           }
         }
       `}</style>

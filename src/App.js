@@ -2,14 +2,7 @@ import React, { useState, useRef } from "react";
 import { Trash2, Edit2, Printer, XCircle } from "lucide-react"; // Import XCircle for the clear button
 
 const MenuMakananDanMinuman = () => {
-  const [menuItems, setMenuItems] = useState([
-    {
-      name: "Nasi Goreng spesial",
-      price: 15000,
-      quantity: 1,
-      description: "Nasi goreng spesial",
-    },
-  ]); // Start with an empty menu
+  const [menuItems, setMenuItems] = useState([]); // Start with an empty menu
 
   const [newItem, setNewItem] = useState({
     name: "",
@@ -324,7 +317,7 @@ const MenuMakananDanMinuman = () => {
             font-size: 26px; /* Increased for better readability */
           }
           #print-section .print-subtotal {
-            font-size: 18px; /* Increased for better readability */
+            font-size: 22px; /* Increased for better readability */
             margin-top: 6px; /* Adjusted space for subtotal */
             display: flex;
             justify-content: space-between;
